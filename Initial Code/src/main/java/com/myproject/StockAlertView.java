@@ -10,8 +10,8 @@ public class StockAlertView implements StockViewer {
 
     public StockAlertView(double highThreshold, double lowThreshold) {
         // TODO: Implement constructor
-        alertThresholdHigh=highThreshold;
-        alertThresholdLow=lowThreshold;
+        alertThresholdHigh = highThreshold;
+        alertThresholdLow = lowThreshold;
     }
 
     @Override
@@ -20,30 +20,26 @@ public class StockAlertView implements StockViewer {
         String stockCode = stockPrice.getCode();
         double currentPrice = stockPrice.getAvgPrice();
         Double lastPrice = lastAlertedPrices.get(stockCode);
-        
+
         // If we have no previous price record for this stock, just store and return
-        if (lastPrice == null) {
-            lastAlertedPrices.put(stockCode, currentPrice);
+        // if (lastPrice == null) {
+        //     lastAlertedPrices.put(stockCode, currentPrice);
+        //     return;
+        // }
+        //nếu lastPrice == currentPrice thì không làm gì cả
+        if (lastPrice != null && lastPrice == currentPrice) {
             return;
         }
-        
-        // Check if current price exceeds the high threshold
-        if (currentPrice > alertThresholdHigh && lastPrice <= alertThresholdHigh) {
+        // Kiểm tra giá cao ngay cả khi đây là lần đầu tiên
+        if (currentPrice >= alertThresholdHigh) {
             alertAbove(stockCode, currentPrice);
-            lastAlertedPrices.put(stockCode, currentPrice);
-        }
-        
-        // Check if current price falls below the low threshold
-        else if (currentPrice < alertThresholdLow && lastPrice >= alertThresholdLow) {
+        } else if (currentPrice <= alertThresholdLow) {
             alertBelow(stockCode, currentPrice);
-            lastAlertedPrices.put(stockCode, currentPrice);
         }
-        
-        // Update the last alerted price even if no alert was triggered
-        else {
-            lastAlertedPrices.put(stockCode, currentPrice);
-        }
-        
+
+        // Lưu giá hiện tại cho lần sau
+        lastAlertedPrices.put(stockCode, currentPrice);
+
     }
 
     private void alertAbove(String stockCode, double price) {
